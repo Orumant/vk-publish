@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/vk-publish/static/css/main.981f7211.chunk.css",
+    "main.js": "/vk-publish/static/js/main.209c47e5.chunk.js",
+    "main.js.map": "/vk-publish/static/js/main.209c47e5.chunk.js.map",
+    "runtime-main.js": "/vk-publish/static/js/runtime-main.b3172513.js",
+    "runtime-main.js.map": "/vk-publish/static/js/runtime-main.b3172513.js.map",
+    "static/css/2.4e89ce74.chunk.css": "/vk-publish/static/css/2.4e89ce74.chunk.css",
+    "static/js/2.864cacc6.chunk.js": "/vk-publish/static/js/2.864cacc6.chunk.js",
+    "static/js/2.864cacc6.chunk.js.map": "/vk-publish/static/js/2.864cacc6.chunk.js.map",
+    "index.html": "/vk-publish/index.html",
+    "precache-manifest.e64bbc3beda56b7d2e3a40627568db2b.js": "/vk-publish/precache-manifest.e64bbc3beda56b7d2e3a40627568db2b.js",
+    "service-worker.js": "/vk-publish/service-worker.js",
+    "static/css/2.4e89ce74.chunk.css.map": "/vk-publish/static/css/2.4e89ce74.chunk.css.map",
+    "static/css/main.981f7211.chunk.css.map": "/vk-publish/static/css/main.981f7211.chunk.css.map",
+    "static/media/persik.png": "/vk-publish/static/media/persik.4e1ec840.png"
+  }
+}
