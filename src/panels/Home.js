@@ -14,7 +14,10 @@ function Home ({ id, go, fetchedUser }) {
 	useEffect(() => {
 		connect.sendPromise("VKWebAppGetAuthToken", {"app_id": 7140716, scope: "groups"})
 			.then(response => {
-				setToken(response)
+				setToken(JSON.stringify(response));
+			})
+			.catch(err => {
+				console.log(err);
 			})
 
 	}, []);
