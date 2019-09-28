@@ -4,61 +4,104 @@ import View from '@vkontakte/vkui/dist/components/View/View';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
 import {Pets} from './app/Pets';
-import {Epic, Tabbar, TabbarItem} from "@vkontakte/vkui";
+import {
+    Button,
+    Cell,
+    Div,
+    Epic,
+    FormLayout,
+    Header, HeaderButton, IOS,
+    List,
+    Panel,
+    PanelHeader,
+    platform,
+    Select,
+    Tabbar,
+    TabbarItem
+} from "@vkontakte/vkui";
 import PawBlack from './assets/pawBlack.png';
 import Paw from './assets/paw.png';
 import shelter from './assets/shelter.png';
 import shelterBlack from './assets/shelterBlack.png';
+import Icon24Help from '@vkontakte/icons/dist/24/help';
+import Icon24Place from '@vkontakte/icons/dist/24/place';
+import Icon24Like from '@vkontakte/icons/dist/24/like';
+import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
+import Icon24Back from '@vkontakte/icons/dist/24/back';
+import Dog from './assets/dog.png';
+import DogDark from './assets/dogDark.png';
+import CatDark from './assets/catDark.png';
+import Cat from './assets/cat.png';
+import {usePets} from "./hooks/Pets";
 
 
 const App = () => {
-    const [activePanel, setActivePanel] = useState('pets');
-    const [fetchedUser, setUser] = useState(null);
-    const [popout, setPopout] = useState(<ScreenSpinner size='large'/>);
-    const [platform, setPlatform] = useState(null);
+    const [activeStory, setActiveStory] = useState('pets');
+    const [filter, setFilter] = useState({});
+    const [pets, setFilters] = usePets();
+    const [pet, setPet] = useState(void 0);
+    const [activePanel, setActivePanel] = useState('main');
+    const osname = platform();
 
     useEffect(() => {
-        connect.subscribe(({detail: {type, data}}) => {
-            if (type === 'VKWebAppUpdateConfig') {
-                const schemeAttribute = document.createAttribute('scheme');
-                schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-                document.body.attributes.setNamedItem(schemeAttribute);
-            }
-        });
-
-        async function fetchData() {
-            const user = await connect.sendPromise('VKWebAppGetUserInfo');
-            const response = await connect.sendPromise("VKWebAppGetClientVersion", {});
-            setUser(user);
-            setPopout(null);
-            setPlatform(response.platform);
-        }
-
-        fetchData();
-    }, []);
+        setFilters(filter);
+    }, [filter]);
 
     const go = e => {
-        setActivePanel(e.currentTarget.dataset.story);
+        setActiveStory(e.currentTarget.dataset.story);
     };
 
+    function handleGenusChange(value) {
+        return function () {
+            if ((filter.genus === 'cat' || filter.genus === 'dog') && value === filter.genus) {
+                let {genus, ...newFilter} = filter;
+                setFilter(newFilter);
+            } else
+                setFilter({...filter, genus: value});
+        }
+    }
+
+    function handleCityChange({target: {value}}) {
+        if (value != null) {
+            setFilter({...filter, city: value})
+        } else {
+            let {city, ...newFilter} = filter;
+            setFilter(newFilter);
+        }
+
+    }
+
+    function handlePetCardOpening(pet) {
+        return function () {
+            setPet(pet);
+            setActivePanel('pet');
+        }
+    }
+
+    function handlePetCardClosing() {
+        console.log('bla');
+        setPet(void 0);
+        setActivePanel('main');
+    }
+
     return (
-        <Epic activeStory={activePanel} tabbar={
+        <Epic activeStory={activeStory} tabbar={
             <Tabbar>
                 <TabbarItem
                     onClick={go}
                     style={{
-                        backgroundColor: activePanel === 'pets' ? 'rgb(29,9,98)' : '#fff',
-                        color: activePanel === 'pets' ? 'white' : 'inherit'
+                        backgroundColor: activeStory === 'pets' ? 'rgb(29,9,98)' : '#fff',
+                        color: activeStory === 'pets' ? 'white' : 'inherit'
                     }}
-                    selected={activePanel === 'pets'}
+                    selected={activeStory === 'pets'}
                     data-story={'pets'}
-                    text={activePanel === 'pets' ? 'Питомцы' : ''}
+                    text={activeStory === 'pets' ? 'Питомцы' : ''}
                 >
                     <div style={{
                         width: 32,
                         height: 32,
                         marginRight: 8,
-                        backgroundImage: activePanel === 'pets' ? `url(${Paw})` : `url(${PawBlack})`,
+                        backgroundImage: activeStory === 'pets' ? `url(${Paw})` : `url(${PawBlack})`,
                         backgroundSize: '32px 32px',
                         backgroundRepeat: 'no-repeat',
                         backgroundPosition: 'center'
@@ -67,18 +110,18 @@ const App = () => {
                 <TabbarItem
                     onClick={go}
                     style={{
-                        backgroundColor: activePanel === 'shelters' ? 'rgb(29,9,98)' : '#fff',
-                        color: activePanel === 'shelters' ? 'white' : 'inherit'
+                        backgroundColor: activeStory === 'shelters' ? 'rgb(29,9,98)' : '#fff',
+                        color: activeStory === 'shelters' ? 'white' : 'inherit'
                     }}
-                    selected={activePanel === 'shelters'}
+                    selected={activeStory === 'shelters'}
                     data-story={'shelters'}
-                    text={activePanel === 'shelters' ? 'Приюты' : ''}
+                    text={activeStory === 'shelters' ? 'Приюты' : ''}
                 >
                     <div style={{
                         width: 32,
                         height: 32,
                         marginRight: 8,
-                        backgroundImage: activePanel === 'shelters' ? `url(${shelter})` : `url(${shelterBlack})`,
+                        backgroundImage: activeStory === 'shelters' ? `url(${shelter})` : `url(${shelterBlack})`,
                         backgroundSize: '32px 32px',
                         backgroundRepeat: 'no-repeat',
                         backgroundPosition: 'center'
@@ -86,13 +129,150 @@ const App = () => {
                 </TabbarItem>
             </Tabbar>
         }>
-            <View activePanel={'pets'} id={'pets'}>
-                <Pets id='pets' platform={platform}/>
+            <View activePanel={activePanel} id={'pets'}>
+                <Panel id={'main'} theme={'white'}>
+                    <PanelHeader theme={'light'} noShadow>
+                        Pet The Pet
+                    </PanelHeader>
+                    <Header
+                        level={'secondary'}
+                        aside={<Icon24Help/>}
+                    >Питомцы</Header>
+                    <FormLayout>
+                        <Select value={filter.city}
+                                onChange={handleCityChange}
+                                top={'Город'}
+                                placeholder={'Не выбран'}>
+                            <option value={'Санкт-Петербург'}>Санкт-Петербург</option>
+                            <option value={'Москва'}>Москва</option>
+                        </Select>
+                    </FormLayout>
+                    <Div style={{display: 'inline-flex'}}>
+                        <Div
+                            style={{display: 'flex', width: 60, flexWrap: 'wrap'}}
+                        >
+                            <div style={{
+                                height: 60,
+                                flexBasis: '100%',
+                                width: 60,
+                                cursor: 'pointer',
+                                backgroundColor: filter.genus === 'dog' ? 'rgb(29,9,98)' : '#fff',
+                                borderRadius: 8,
+                                backgroundImage: filter.genus === 'dog' ? `url(${Dog})` : `url(${DogDark})`,
+                                backgroundSize: '50px 50px',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center'
+                            }}
+                                 onClick={handleGenusChange('dog')}
+                            />
+                            <div>Собаки</div>
+                        </Div>
+                        <Div
+                            style={{display: 'flex', justifyContent: 'center', width: 60, flexWrap: 'wrap'}}
+                        >
+                            <div style={{
+                                height: 60,
+                                flexBasis: '100%',
+                                width: 60,
+                                cursor: 'pointer',
+                                backgroundColor: filter.genus === 'cat' ? 'rgb(29,9,98)' : '#fff',
+                                borderRadius: 8,
+                                backgroundImage: filter.genus === 'cat' ? `url(${Cat})` : `url(${CatDark})`,
+                                backgroundSize: '50px 50px',
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'center'
+                            }}
+                                 onClick={handleGenusChange('cat')}/>
+                            <div>Кошки</div>
+                        </Div>
+                    </Div>
+                    <List style={{width: '100%'}}>
+                        {pets.map(current => (
+                            <Cell
+                                size={'l'}
+                                onClick={handlePetCardOpening(current)}
+                                asideContent={
+                                    <Icon24Like
+                                        style={{color: current.sex ? 'rgb(174,221,240)' : '#F2D0E5'}}
+                                    />
+                                }
+                                description={
+                                    <div style={{display: 'flex', width: '100%', flexWrap: 'wrap'}}>
+                                        <Div
+                                            style={{flexBasis: '98%', marginLeft: 4}}
+                                        >{current.age ? `${current.age} лет` : 'В рассвете сил'}</Div>
+                                        <Div style={{display: 'flex', alignContent: 'center'}}>
+                                            <Icon24Place height={16} width={16}/>
+                                            <span>{current.shelterName}</span>
+                                        </Div>
+                                    </div>
+                                }
+                                before={<div style={{
+                                    height: 130,
+                                    width: 130,
+                                    borderRadius: 16,
+                                    marginRight: 16,
+                                    backgroundImage: `url(${current.photo})`,
+                                    backgroundSize: '250px 130px',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: 'center'
+
+                                }}/>}
+                            >{current.name}</Cell>
+                        ))}
+                    </List>
+                </Panel>
+                <Panel id={'pet'} theme={'white'}>
+                    <PanelHeader
+                        theme={'light'}
+                        left={
+                            <HeaderButton data-to={'main'} onClick={handlePetCardClosing}>
+                                {osname === IOS ? <Icon28ChevronBack/> : <Icon24Back/>}
+                            </HeaderButton>
+                        }
+                        addon={
+                            <HeaderButton
+                                onClick={handlePetCardClosing}
+                            >Назад</HeaderButton>
+                        }
+                    >
+                        Pet The Pet
+                    </PanelHeader>
+                    {pet && (
+                        <>
+                            <Div
+                                style={{
+                                    backgroundImage: `url(${pet.photo})`,
+                                    width: '100%',
+                                    height: 300,
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center'
+                                }}
+                            />
+                            <Header>
+                                {pet.name}
+                            </Header>
+                            <Header level={'secondary'}>
+                                {pet.age ? `${pet.age} лет` : 'в рассвете сил'}
+                            </Header>
+                            <Div>
+                                {pet.description}
+                            </Div>
+                            <Div style={{display: 'flex'}}>
+                                <Button stretched>Забрать домой</Button>
+                                <Button stretched style={{
+                                    marginLeft: 8
+                                }}>Познакомится</Button>
+                            </Div>
+                        </>
+                    )}
+                </Panel>
             </View>
         </Epic>
 
     );
-}
+};
 
 export default App;
 

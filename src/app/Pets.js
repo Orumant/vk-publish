@@ -6,9 +6,8 @@ import {
     Header,
     Div,
     FormLayout,
-    Select, List, Cell, Button,
+    Select, List, Cell, Button, platform,IOS, HeaderButton
 } from "@vkontakte/vkui";
-import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
 import Icon24Help from '@vkontakte/icons/dist/24/help';
 import Icon24Place from '@vkontakte/icons/dist/24/place';
 import Icon24Like from '@vkontakte/icons/dist/24/like';
@@ -19,13 +18,14 @@ import DogDark from '../assets/dogDark.png';
 import CatDark from '../assets/catDark.png';
 import Cat from '../assets/cat.png';
 import {usePets} from "../hooks/Pets";
-import HeaderButton from "@vkontakte/vkui/dist/components/HeaderButton/HeaderButton";
 
-export function Pets({go, id, platform}) {
+
+export function Pets({go}) {
     const [filter, setFilter] = useState({});
     const [pets, setFilters] = usePets();
     const [pet, setPet] = useState(void 0);
     const [activePanel, setActivePanel] = useState('main');
+    const osname = platform();
 
     useEffect(() => {
         setFilters(filter);
@@ -65,7 +65,7 @@ export function Pets({go, id, platform}) {
     }
 
     return (
-        <View activePanel={activePanel} id={'pets'} header={'test'}>
+        <View activePanel={activePanel} id={'pets'}>
             <Panel id={'main'} theme={'white'}>
                 <PanelHeader theme={'light'} noShadow>
                     Pet The Pet
@@ -161,12 +161,20 @@ export function Pets({go, id, platform}) {
             <Panel id={'pet'} theme={'white'}>
                 <PanelHeader
                     theme={'light'}
-                    noShadow
-                    left={<HeaderButton onClick={handlePetCardClosing}>{platform === 'ios' ? <Icon28ChevronBack /> : <Icon24Back />}</HeaderButton>}
-                    addon={<HeaderButton onClick={handlePetCardClosing}>Назад</HeaderButton>}
+                    left={
+                        <HeaderButton data-to={'main'}  onClick={go}>
+                            {osname === IOS ? <Icon28ChevronBack /> : <Icon24Back />}
+                        </HeaderButton>
+                    }
+                    addon={
+                        <HeaderButton
+                            onClick={handlePetCardClosing}
+                        >Назад</HeaderButton>
+                    }
                 >
                     Pet The Pet
                 </PanelHeader>
+                <Button stretched onClick={handlePetCardClosing}>Back</Button>
                 {pet && (
                     <>
                         <Div
