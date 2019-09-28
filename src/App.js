@@ -3,12 +3,16 @@ import connect from '@vkontakte/vk-connect';
 import View from '@vkontakte/vkui/dist/components/View/View';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
-
-import Home from './panels/Home';
+import Icon24Home from '@vkontakte/icons/dist/24/home';
+import Icon24Report from '@vkontakte/icons/dist/24/report';
+import Icon24Smile from '@vkontakte/icons/dist/24/smile';
 import Persik from './panels/Persik';
+import {Pets} from './app/Pets';
+import {Epic, Tabbar, TabbarItem} from "@vkontakte/vkui";
+
 
 const App = () => {
-	const [activePanel, setActivePanel] = useState('home');
+	const [activePanel, setActivePanel] = useState('pets');
 	const [fetchedUser, setUser] = useState(null);
 	const [popout, setPopout] = useState(<ScreenSpinner size='large' />);
 
@@ -29,14 +33,31 @@ const App = () => {
 	}, []);
 
 	const go = e => {
-		setActivePanel(e.currentTarget.dataset.to);
+		setActivePanel(e.currentTarget.dataset.story);
 	};
 
 	return (
-		<View activePanel={activePanel} popout={popout}>
-			<Home id='home' fetchedUser={fetchedUser} go={go} />
-			<Persik id='persik' go={go} />
-		</View>
+		<Epic activeStory={activePanel} tabbar={
+			<Tabbar>
+				<TabbarItem
+					onClick={go}
+					selected={activePanel === 'pets'}
+					data-story={'people'}
+					text={'Питомцы'}
+				><Icon24Home/></TabbarItem>
+				<TabbarItem
+					onClick={go}
+					selected={activePanel === 'shelters'}
+					data-story={'shelters'}
+					text={'Приюты'}
+				><Icon24Smile/></TabbarItem>
+			</Tabbar>
+		}>
+			<View activePanel={'pets'} id={'pets'}>
+				<Pets id='pets' go={go} />
+			</View>
+		</Epic>
+
 	);
 }
 

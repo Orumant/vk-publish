@@ -1,5 +1,5 @@
 {
-  "name": "vk-mini-app-test",
+  "name": "ptp-front",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,6 +11,7 @@
     "build": "react-scripts build"
   },
   "keywords": [],
+  "repository": "https://orumant@bitbucket.org/orumant/ptp-front.git",
   "author": "",
   "license": "MIT",
   "devDependencies": {
@@ -21,14 +22,17 @@
   },
   "dependencies": {
     "@vkontakte/icons": "^1.10.0",
-    "@vkontakte/vk-connect": "^1.6.2",
+    "@vkontakte/vk-connect": "^1.6.5",
     "@vkontakte/vkui": "^2.30.7",
+    "axios": "^0.19.0",
     "babel-eslint": "^10.0.3",
     "chalk": "^2.4.2",
     "core-js": "^3.2.1",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
-    "react-dom": "^16.9.0"
+    "react-dom": "^16.9.0",
+    "react-redux": "^7.1.1",
+    "redux": "^4.0.4"
   },
   "browserslist": {
     "production": [
