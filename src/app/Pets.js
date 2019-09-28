@@ -119,8 +119,8 @@ export function Pets({go, id}) {
                                 width: 130,
                                 borderRadius: 16,
                                 marginRight: 16,
-                                background: `url(${pet.photo})`,
-                                backgroundSize: 'contain',
+                                backgroundImage: `url(${pet.photo})`,
+                                backgroundSize: '250px 130px',
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center'
 

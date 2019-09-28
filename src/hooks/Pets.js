@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import axios from "axios";
-const BACKEND_URL = 'http://demo132.delta.vkhackathon.com:8080/api/';
+const BACKEND_URL = 'https://demo132.delta.vkhackathon.com/api/';
 const backend = axios.create({
     baseURL: BACKEND_URL,
     headers: {
