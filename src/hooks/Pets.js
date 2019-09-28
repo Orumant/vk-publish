@@ -14,13 +14,16 @@ export function usePets () {
     const [props, setProps] = useState({});
 
     useEffect(() => {
-        const {page = 0, size = 10, genus, sex, name, sortField, direction} = props;
+        const {page = 0, size = 10, genus, sex, city, name, sortField, direction} = props;
         let request = `pets?page=${page}&size=${size}`;
         if (sex) {
             request += `&sex.equals=${sex}`;
         }
         if (name) {
             request += `&name.contains=${name}`;
+        }
+        if (city) {
+            request += `&city.equals=${city}`;
         }
         if (genus) {
             request += `&genus.equals=${genus}`

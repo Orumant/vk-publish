@@ -6,22 +6,26 @@ import {
     Header,
     Div,
     FormLayout,
-    Select, List, Cell,
-    Avatar,
+    Select, List, Cell, Button,
 } from "@vkontakte/vkui";
+import PanelHeaderBack from '@vkontakte/vkui/dist/components/PanelHeaderBack/PanelHeaderBack';
 import Icon24Help from '@vkontakte/icons/dist/24/help';
 import Icon24Place from '@vkontakte/icons/dist/24/place';
 import Icon24Like from '@vkontakte/icons/dist/24/like';
+import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
+import Icon24Back from '@vkontakte/icons/dist/24/back';
 import Dog from '../assets/dog.png';
 import DogDark from '../assets/dogDark.png';
 import CatDark from '../assets/catDark.png';
 import Cat from '../assets/cat.png';
 import {usePets} from "../hooks/Pets";
+import HeaderButton from "@vkontakte/vkui/dist/components/HeaderButton/HeaderButton";
 
-export function Pets({go, id}) {
-    const [city, setCity] = useState('');
+export function Pets({go, id, platform}) {
     const [filter, setFilter] = useState({});
     const [pets, setFilters] = usePets();
+    const [pet, setPet] = useState(void 0);
+    const [activePanel, setActivePanel] = useState('main');
 
     useEffect(() => {
         setFilters(filter);
@@ -37,9 +41,32 @@ export function Pets({go, id}) {
         }
     }
 
+    function handleCityChange({target: {value}}) {
+        if (value != null) {
+            setFilter({...filter, city: value})
+        } else {
+            let {city, ...newFilter} = filter;
+            setFilter(newFilter);
+        }
+
+    }
+
+    function handlePetCardOpening(pet) {
+        return function () {
+            setPet(pet);
+            setActivePanel('pet');
+        }
+    }
+
+    function handlePetCardClosing() {
+        console.log('bla');
+        setPet(void 0);
+        setActivePanel('main');
+    }
+
     return (
-        <View activePanel={'pets'} id={'pets'} header={'test'}>
-            <Panel id={id} theme={'white'}>
+        <View activePanel={activePanel} id={'pets'} header={'test'}>
+            <Panel id={'main'} theme={'white'}>
                 <PanelHeader theme={'light'} noShadow>
                     Pet The Pet
                 </PanelHeader>
@@ -48,11 +75,12 @@ export function Pets({go, id}) {
                     aside={<Icon24Help/>}
                 >Питомцы</Header>
                 <FormLayout>
-                    <Select value={city}
-                            onChange={({target: {value}}) => setCity(value)}
+                    <Select value={filter.city}
+                            onChange={handleCityChange}
                             top={'Город'}
                             placeholder={'Не выбран'}>
                         <option value={'Санкт-Петербург'}>Санкт-Петербург</option>
+                        <option value={'Москва'}>Москва</option>
                     </Select>
                 </FormLayout>
                 <Div style={{display: 'inline-flex'}}>
@@ -95,22 +123,23 @@ export function Pets({go, id}) {
                     </Div>
                 </Div>
                 <List style={{width: '100%'}}>
-                    {pets.map(pet => (
+                    {pets.map(current => (
                         <Cell
                             size={'l'}
+                            onClick={handlePetCardOpening(current)}
                             asideContent={
                                 <Icon24Like
-                                    style={{color: pet.sex ? 'rgb(174,221,240)' : '#F2D0E5'}}
+                                    style={{color: current.sex ? 'rgb(174,221,240)' : '#F2D0E5'}}
                                 />
                             }
                             description={
                                 <div style={{display: 'flex', width: '100%', flexWrap: 'wrap'}}>
                                     <Div
                                         style={{flexBasis: '98%', marginLeft: 4}}
-                                    >{pet.age ? pet.age : 'В рассвете сил'}</Div>
+                                    >{current.age ? `${current.age} лет` : 'В рассвете сил'}</Div>
                                     <Div style={{display: 'flex', alignContent: 'center'}}>
                                         <Icon24Place height={16} width={16}/>
-                                        <span>{pet.shelterName}</span>
+                                        <span>{current.shelterName}</span>
                                     </Div>
                                 </div>
                             }
@@ -119,15 +148,54 @@ export function Pets({go, id}) {
                                 width: 130,
                                 borderRadius: 16,
                                 marginRight: 16,
-                                backgroundImage: `url(${pet.photo})`,
+                                backgroundImage: `url(${current.photo})`,
                                 backgroundSize: '250px 130px',
                                 backgroundRepeat: 'no-repeat',
                                 backgroundPosition: 'center'
 
                             }}/>}
-                        >{pet.name}</Cell>
+                        >{current.name}</Cell>
                     ))}
                 </List>
+            </Panel>
+            <Panel id={'pet'} theme={'white'}>
+                <PanelHeader
+                    theme={'light'}
+                    noShadow
+                    left={<HeaderButton onClick={handlePetCardClosing}>{platform === 'ios' ? <Icon28ChevronBack /> : <Icon24Back />}</HeaderButton>}
+                    addon={<HeaderButton onClick={handlePetCardClosing}>Назад</HeaderButton>}
+                >
+                    Pet The Pet
+                </PanelHeader>
+                {pet && (
+                    <>
+                        <Div
+                            style={{
+                                backgroundImage: `url(${pet.photo})`,
+                                width: '100%',
+                                height: 300,
+                                backgroundRepeat: 'no-repeat',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        />
+                        <Header>
+                            {pet.name}
+                        </Header>
+                        <Header level={'secondary'}>
+                            {pet.age ? `${pet.age} лет` : 'в рассвете сил'}
+                        </Header>
+                        <Div>
+                            {pet.description}
+                        </Div>
+                        <Div style={{display: 'flex'}}>
+                            <Button stretched>Забрать домой</Button>
+                            <Button stretched style={{
+                                marginLeft: 8
+                            }}>Познакомится</Button>
+                        </Div>
+                    </>
+                )}
             </Panel>
         </View>
     )
