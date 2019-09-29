@@ -38,7 +38,8 @@ import {usePets} from "./hooks/Pets";
 const App = () => {
     const [activeStory, setActiveStory] = useState('pets');
     const [filter, setFilter] = useState({});
-    const [pets, setFilters] = usePets();
+    const [page, setPage] = useState(0);
+    const [pets, setFilters] = usePets(page, 20);
     const [pet, setPet] = useState(void 0);
     const [activePanel, setActivePanel] = useState('main');
     const osname = platform();
@@ -82,6 +83,17 @@ const App = () => {
         console.log('bla');
         setPet(void 0);
         setActivePanel('main');
+    }
+
+    function fetchMore() {
+        if (pets.length > 0) {
+            let nextPage = page + 1;
+            setPage(nextPage);
+            setFilter({...filter, page: nextPage})
+        } else {
+            setPage(0);
+            setFilter({...filter, page: 0})
+        }
     }
 
     return (
@@ -134,6 +146,7 @@ const App = () => {
                     <PanelHeader theme={'light'} noShadow>
                         Pet The Pet
                     </PanelHeader>
+                    <a id={'top'}/>
                     <Header
                         level={'secondary'}
                         aside={<Icon24Help/>}
@@ -213,7 +226,7 @@ const App = () => {
                                     borderRadius: 16,
                                     marginRight: 16,
                                     backgroundImage: `url(${current.photo})`,
-                                    backgroundSize: '250px 130px',
+                                    backgroundSize: '130px 130px',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundPosition: 'center'
 
@@ -221,6 +234,13 @@ const App = () => {
                             >{current.name}</Cell>
                         ))}
                     </List>
+                    <Button
+                        size="xl"
+                        component='a'
+                        href={'#top'}
+                        level={'secondary'}
+                        onClick={fetchMore}
+                        style={{margin: '8px 0'}}>{pets.length > 0 ? 'Ещё' : 'В начало'}</Button>
                 </Panel>
                 <Panel id={'pet'} theme={'white'}>
                     <PanelHeader
@@ -250,7 +270,7 @@ const App = () => {
                                     backgroundPosition: 'center'
                                 }}
                             />
-                            <Header>
+                            <Header aside={<Button component="a" href="#">Помочь</Button>}>
                                 {pet.name}
                             </Header>
                             <Header level={'secondary'}>

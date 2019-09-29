@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import axios from "axios";
+
 const BACKEND_URL = 'https://demo132.delta.vkhackathon.com/api/';
 const backend = axios.create({
     baseURL: BACKEND_URL,
@@ -9,12 +10,13 @@ const backend = axios.create({
     },
     withCredentials: true
 });
-export function usePets () {
+
+export function usePets(initialPage = 0, initialSize = 10) {
     const [pets, setPets] = useState([]);
     const [props, setProps] = useState({});
 
     useEffect(() => {
-        const {page = 0, size = 10, genus, sex, city, name, sortField, direction} = props;
+        const {page = initialPage, size = initialSize, genus, sex, city, name, sortField, direction} = props;
         let request = `pets?page=${page}&size=${size}`;
         if (sex) {
             request += `&sex.equals=${sex}`;
