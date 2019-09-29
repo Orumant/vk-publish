@@ -1,15 +1,5 @@
 import {useEffect, useState} from 'react';
-import axios from "axios";
-
-const BACKEND_URL = 'https://demo132.delta.vkhackathon.com/api/';
-const backend = axios.create({
-    baseURL: BACKEND_URL,
-    headers: {
-        "Content-Type": 'application/json',
-        "X-Content-Type-Options": "nosniff",
-    },
-    withCredentials: true
-});
+import {backend} from './backend';
 
 export function usePets(initialPage = 0, initialSize = 10) {
     const [pets, setPets] = useState([]);

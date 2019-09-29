@@ -1,16 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import connect from '@vkontakte/vk-connect';
 import View from '@vkontakte/vkui/dist/components/View/View';
-import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
-import {Pets} from './app/Pets';
 import {
     Button,
     Cell,
     Div,
     Epic,
-    FormLayout,
-    Header, HeaderButton, IOS,
+    FormLayout, Group,
+    Header, HeaderButton, IOS, Link,
     List,
     Panel,
     PanelHeader,
@@ -21,7 +18,7 @@ import {
 } from "@vkontakte/vkui";
 import PawBlack from './assets/pawBlack.png';
 import Paw from './assets/paw.png';
-import shelter from './assets/shelter.png';
+import shelterImg from './assets/shelter.png';
 import shelterBlack from './assets/shelterBlack.png';
 import Icon24Help from '@vkontakte/icons/dist/24/help';
 import Icon24Place from '@vkontakte/icons/dist/24/place';
@@ -33,6 +30,7 @@ import DogDark from './assets/dogDark.png';
 import CatDark from './assets/catDark.png';
 import Cat from './assets/cat.png';
 import {usePets} from "./hooks/Pets";
+import {useShelters} from "./hooks/Shelters";
 
 
 const App = () => {
@@ -42,11 +40,21 @@ const App = () => {
     const [pets, setFilters] = usePets(petsPage, 20);
     const [pet, setPet] = useState(void 0);
     const [activePanel, setActivePanel] = useState('main');
+
+    const [activeSheltersPanel, setActiveSheltersPanel] = useState('sheltersPanel');
+    const [sheltersPage, setSheltersPage] = useState(0);
+    const [sheltersFilter, setSheltersFilter] = useState({});
+    const [shelters, setSheltersFilters] = useShelters(sheltersPage);
+    const [shelter, setShelter] = useState(void 0);
+
     const osname = platform();
 
     useEffect(() => {
         setFilters(filter);
     }, [filter]);
+    useEffect(() => {
+        setSheltersFilters(sheltersFilter);
+    }, [sheltersFilter]);
 
     const go = e => {
         setActiveStory(e.currentTarget.dataset.story);
@@ -69,7 +77,15 @@ const App = () => {
             let {city, ...newFilter} = filter;
             setFilter(newFilter);
         }
+    }
 
+    function handleShelterCityChange({target: {value}}) {
+        if (value != null) {
+            setSheltersFilter({...sheltersFilter, city: value})
+        } else {
+            let {city, ...newFilter} = sheltersFilter;
+            setSheltersFilter(newFilter);
+        }
     }
 
     function handlePetCardOpening(pet) {
@@ -80,9 +96,20 @@ const App = () => {
     }
 
     function handlePetCardClosing() {
-        console.log('bla');
         setPet(void 0);
         setActivePanel('main');
+    }
+
+    function handleShelterCardOpening(shelter) {
+        return function () {
+            setShelter(shelter);
+            setActiveSheltersPanel('shelterPanel');
+        }
+    }
+
+    function handleShelterCardClosing() {
+        setShelter(void 0);
+        setActiveSheltersPanel('sheltersPanel');
     }
 
     function fetchMore() {
@@ -93,6 +120,18 @@ const App = () => {
         } else {
             setPetsPage(0);
             setFilter({...filter, page: 0})
+        }
+        window.scrollTo(0, 0)
+    }
+
+    function fetchMoreShelters() {
+        if (shelters.length > 0) {
+            let nextPage = sheltersPage + 1;
+            setSheltersPage(nextPage);
+            setSheltersFilter({...sheltersFilter, page: nextPage})
+        } else {
+            setSheltersPage(0);
+            setSheltersFilter({...sheltersFilter, page: 0})
         }
         window.scrollTo(0, 0)
     }
@@ -134,7 +173,7 @@ const App = () => {
                         width: 32,
                         height: 32,
                         marginRight: 8,
-                        backgroundImage: activeStory === 'shelters' ? `url(${shelter})` : `url(${shelterBlack})`,
+                        backgroundImage: activeStory === 'shelters' ? `url(${shelterImg})` : `url(${shelterBlack})`,
                         backgroundSize: '32px 32px',
                         backgroundRepeat: 'no-repeat',
                         backgroundPosition: 'center'
@@ -158,6 +197,7 @@ const App = () => {
                                 placeholder={'Не выбран'}>
                             <option value={'Санкт-Петербург'}>Санкт-Петербург</option>
                             <option value={'Москва'}>Москва</option>
+                            <option value={'Всеволожск'}>Всеволожск</option>
                         </Select>
                     </FormLayout>
                     <Div style={{display: 'inline-flex'}}>
@@ -202,6 +242,7 @@ const App = () => {
                     <List style={{width: '100%'}}>
                         {pets.map(current => (
                             <Cell
+                                key={current.id}
                                 size={'l'}
                                 onClick={handlePetCardOpening(current)}
                                 asideContent={
@@ -226,7 +267,8 @@ const App = () => {
                                     borderRadius: 16,
                                     marginRight: 16,
                                     backgroundImage: `url(${current.photo})`,
-                                    backgroundSize: '130px 130px',
+                                    // backgroundSize: '130px 130px',
+                                    backgroundSize: '100% auto',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundPosition: 'center'
 
@@ -258,16 +300,18 @@ const App = () => {
                     </PanelHeader>
                     {pet && (
                         <>
-                            <Div
-                                style={{
-                                    backgroundImage: `url(${pet.photo})`,
-                                    width: '100%',
-                                    height: 300,
-                                    backgroundRepeat: 'no-repeat',
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center'
-                                }}
-                            />
+                            <Group>
+                                <Div
+                                    style={{
+                                        backgroundImage: `url(${pet.photo})`,
+                                        // width: '100%',
+                                        height: 300,
+                                        backgroundRepeat: 'no-repeat',
+                                        backgroundSize: 'auto 100%',
+                                        backgroundPosition: 'center'
+                                    }}
+                                />
+                            </Group>
                             <Header aside={<Button component="a" href={pet.payLink}>Помочь</Button>}>
                                 {pet.name}
                             </Header>
@@ -278,16 +322,128 @@ const App = () => {
                                 {pet.description}
                             </Div>
                             <Div style={{display: 'flex'}}>
-                                <Button stretched>Забрать домой</Button>
-                                <Button stretched style={{
-                                    marginLeft: 8
-                                }}>Познакомиться</Button>
+                                <Button
+                                    component={'a'}
+                                    href={pet.chatLink}
+                                    stretched>Забрать домой</Button>
+                                <Button
+                                    component={'a'}
+                                    href={pet.chatLink}
+                                    stretched
+                                    style={{marginLeft: 8}}>Познакомиться</Button>
                             </Div>
                         </>
                     )}
                 </Panel>
             </View>
-            <View/>
+            <View activePanel={activeSheltersPanel} id={'shelters'}>
+                <Panel id={'sheltersPanel'} theme={'white'}>
+                    <PanelHeader theme={'light'} noShadow>
+                        Pet The Pet
+                    </PanelHeader>
+                    <Header
+                        level={'secondary'}
+                        aside={<Icon24Help/>}
+                    >Приюты</Header>
+                    <FormLayout>
+                        <Select value={sheltersFilter.city}
+                                onChange={handleShelterCityChange}
+                                top={'Город'}
+                                placeholder={'Не выбран'}>
+                            <option value={'Санкт-Петербург'}>Санкт-Петербург</option>
+                            <option value={'Москва'}>Москва</option>
+                            <option value={'Всеволожск'}>Всеволожск</option>
+                        </Select>
+                    </FormLayout>
+                    <List style={{width: '100%'}}>
+                        {shelters.map(curShelter => (
+                            <Cell
+                                onClick={handleShelterCardOpening(curShelter)}
+                                description={
+                                    <div style={{display: 'flex', width: '100%', flexWrap: 'wrap'}}>
+                                        <Div style={{display: 'flex', alignContent: 'center'}}>
+                                            <Icon24Place height={16} width={16}/>
+                                            <span>{curShelter.city}</span>
+                                        </Div>
+                                    </div>
+                                }
+                                before={<div style={{
+                                    height: 130,
+                                    width: 130,
+                                    borderRadius: 16,
+                                    marginRight: 16,
+                                    // backgroundImage: `url(${current.photo})`,
+                                    backgroundColor: 'tomato',
+                                    backgroundSize: '130px 130px',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: 'center'
+
+                                }}/>}
+                                size={'l'}
+                                key={curShelter.id}>{curShelter.name}</Cell>
+                        ))}
+                    </List>
+                    <Button
+                        size="xl"
+                        level={'secondary'}
+                        onClick={fetchMoreShelters}
+                        style={{margin: '8px 0'}}>{shelters.length > 0 ? 'Ещё' : 'В начало'}</Button>
+                </Panel>
+                <Panel id={'shelterPanel'} theme={'white'}>
+                    <PanelHeader
+                        theme={'light'}
+                        left={
+                            <HeaderButton data-to={'sheltersPanel'} onClick={handleShelterCardClosing}>
+                                {osname === IOS ? <Icon28ChevronBack/> : <Icon24Back/>}
+                            </HeaderButton>
+                        }
+                        addon={
+                            <HeaderButton
+                                onClick={handleShelterCardClosing}
+                            >Назад</HeaderButton>
+                        }
+                    >
+                        Pet The Pet
+                    </PanelHeader>
+                    {shelter && (
+                        <>
+                            <Group>
+                                <Div
+                                    style={{
+                                        // backgroundImage: `url(${pet.photo})`,
+                                        backgroundColor: 'cyan',
+                                        // width: '100%',
+                                        height: 300,
+                                        backgroundRepeat: 'no-repeat',
+                                        backgroundSize: 'auto 100%',
+                                        backgroundPosition: 'center'
+                                    }}
+                                />
+                            </Group>
+                            <Header aside={<Link href={shelter.link}>Группа VK</Link>}>
+                                {shelter.name}
+                            </Header>
+                            <Header level={'secondary'}>
+                                {shelter.city}
+                            </Header>
+                            <Div>
+                                {shelter.description}
+                            </Div>
+                            <Div style={{display: 'flex'}}>
+                                <Button
+                                    stretched
+                                    component={'a'}
+                                    href={shelter.chatLink}
+                                    style={{marginRight: 8}}>Помочь делом</Button>
+                                <Button
+                                    stretched
+                                    component="a"
+                                    href={shelter.payLink}>Помочь рублём</Button>
+                            </Div>
+                        </>
+                    )}
+                </Panel>
+            </View>
         </Epic>
 
     );
