@@ -38,8 +38,8 @@ import {usePets} from "./hooks/Pets";
 const App = () => {
     const [activeStory, setActiveStory] = useState('pets');
     const [filter, setFilter] = useState({});
-    const [page, setPage] = useState(0);
-    const [pets, setFilters] = usePets(page, 20);
+    const [petsPage, setPetsPage] = useState(0);
+    const [pets, setFilters] = usePets(petsPage, 20);
     const [pet, setPet] = useState(void 0);
     const [activePanel, setActivePanel] = useState('main');
     const osname = platform();
@@ -87,11 +87,11 @@ const App = () => {
 
     function fetchMore() {
         if (pets.length > 0) {
-            let nextPage = page + 1;
-            setPage(nextPage);
+            let nextPage = petsPage + 1;
+            setPetsPage(nextPage);
             setFilter({...filter, page: nextPage})
         } else {
-            setPage(0);
+            setPetsPage(0);
             setFilter({...filter, page: 0})
         }
         window.scrollTo(0, 0)
@@ -268,7 +268,7 @@ const App = () => {
                                     backgroundPosition: 'center'
                                 }}
                             />
-                            <Header aside={<Button component="a" href="#">Помочь</Button>}>
+                            <Header aside={<Button component="a" href={pet.payLink}>Помочь</Button>}>
                                 {pet.name}
                             </Header>
                             <Header level={'secondary'}>
@@ -287,6 +287,7 @@ const App = () => {
                     )}
                 </Panel>
             </View>
+            <View/>
         </Epic>
 
     );
