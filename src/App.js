@@ -139,6 +139,13 @@ const App = () => {
         window.scrollTo(0, 0)
     }
 
+    function findShelterByName(name) {
+        let theOne = shelters.find(sh => sh.name === name);
+        setActiveStory('shelters');
+        setShelter(theOne);
+        setActiveSheltersPanel('shelterPanel');
+    }
+
     return (
         <Epic activeStory={activeStory} tabbar={
             <Tabbar>
@@ -311,7 +318,6 @@ const App = () => {
                                 <Div
                                     style={{
                                         backgroundImage: `url(${pet.photo})`,
-                                        // width: '100%',
                                         height: 300,
                                         backgroundRepeat: 'no-repeat',
                                         backgroundSize: 'auto 100%',
@@ -322,7 +328,10 @@ const App = () => {
                             <Header aside={<Button component="a" href={pet.payLink}>Помочь</Button>}>
                                 {pet.name}
                             </Header>
-                            <Header level={'secondary'}>
+                            <Header level={'secondary'} aside={
+                                <Button
+                                    onClick={() => findShelterByName(pet.shelterName)}>Приют</Button>
+                            }>
                                 {pet.age ? `${pet.age} лет` : 'в рассвете сил'}
                             </Header>
                             <Div>
