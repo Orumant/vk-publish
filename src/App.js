@@ -8,7 +8,7 @@ import {
     Epic,
     FormLayout, Group,
     Header, HeaderButton, IOS, Link,
-    List,
+    List, ModalCard, ModalRoot,
     Panel,
     PanelHeader,
     platform,
@@ -20,10 +20,11 @@ import PawBlack from './assets/pawBlack.png';
 import Paw from './assets/paw.png';
 import shelterImg from './assets/shelter.png';
 import shelterBlack from './assets/shelterBlack.png';
-import Icon24Help from '@vkontakte/icons/dist/24/help';
+import Icon28HelpOutline from '@vkontakte/icons/dist/28/help_outline';
 import Icon24Place from '@vkontakte/icons/dist/24/place';
 import Icon24Like from '@vkontakte/icons/dist/24/like';
 import Icon28ChevronBack from '@vkontakte/icons/dist/28/chevron_back';
+import Icon56UsersOutline from '@vkontakte/icons/dist/56/users_outline';
 import Icon24Back from '@vkontakte/icons/dist/24/back';
 import Dog from './assets/dog.png';
 import DogDark from './assets/dogDark.png';
@@ -46,12 +47,14 @@ const App = () => {
     const [sheltersFilter, setSheltersFilter] = useState({});
     const [shelters, setSheltersFilters] = useShelters(sheltersPage);
     const [shelter, setShelter] = useState(void 0);
+    const [activeModal, setActiveModal] = useState(null);
 
     const osname = platform();
 
     useEffect(() => {
         setFilters(filter);
     }, [filter]);
+
     useEffect(() => {
         setSheltersFilters(sheltersFilter);
     }, [sheltersFilter]);
@@ -182,13 +185,18 @@ const App = () => {
             </Tabbar>
         }>
             <View activePanel={activePanel} id={'pets'}>
+                <Panel id={'help'} theme={'white'}>
+                    <Div>
+                        
+                    </Div>
+                </Panel>
                 <Panel id={'main'} theme={'white'}>
                     <PanelHeader theme={'light'} noShadow>
                         Pet The Pet
                     </PanelHeader>
                     <Header
                         level={'secondary'}
-                        aside={<Icon24Help/>}
+                        aside={<Icon28HelpOutline/>}
                     >Питомцы</Header>
                     <FormLayout>
                         <Select value={filter.city}
@@ -267,7 +275,6 @@ const App = () => {
                                     borderRadius: 16,
                                     marginRight: 16,
                                     backgroundImage: `url(${current.photo})`,
-                                    // backgroundSize: '130px 130px',
                                     backgroundSize: '100% auto',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundPosition: 'center'
@@ -336,14 +343,39 @@ const App = () => {
                     )}
                 </Panel>
             </View>
-            <View activePanel={activeSheltersPanel} id={'shelters'}>
+            <View activePanel={activeSheltersPanel}
+                  modal={
+                      <ModalRoot activeModal={activeModal}>
+                          <ModalCard id={'modal'}
+                                     icon={<Icon56UsersOutline/>}
+                                     title={'Нам необходима любая помощь'}
+                                     onClose={() => setActiveModal(null)}>
+                              {shelter && <Group>
+                                  <List>
+                                      {shelter.needFeed && <Cell>Накормить</Cell>}
+                                      {shelter.needHands && <Cell>Почистить вольеры</Cell>}
+                                      {shelter.needTransport && <Cell>Перевозка на своем авто</Cell>}
+                                      {shelter.needWalk && <Cell>Выгулять</Cell>}
+                                      {shelter.needRepair && <Cell>Починить/отремонтировать</Cell>}
+                                      {shelter.needOverexposure && <Cell>Взять на передержку</Cell>}
+                                      {shelter.canPhotoSession && <Cell>Сделать фотосессию</Cell>}
+                                      {shelter.needGrooming && <Cell>Подстричь (груминг)</Cell>}
+                                      {shelter.needGroupDesignHelp && <Cell>Оформить страничку группы</Cell>}
+                                      {shelter.needMedHelp && <Cell>Медицинская помощь и медикаменты</Cell>}
+                                  </List>
+                                  <Button stretched component={'a'} href={shelter.chatLink}>Помочь делом</Button>
+                              </Group>}
+                          </ModalCard>
+                      </ModalRoot>
+                  }
+                  id={'shelters'}>
                 <Panel id={'sheltersPanel'} theme={'white'}>
                     <PanelHeader theme={'light'} noShadow>
                         Pet The Pet
                     </PanelHeader>
                     <Header
                         level={'secondary'}
-                        aside={<Icon24Help/>}
+                        aside={<Icon28HelpOutline/>}
                     >Приюты</Header>
                     <FormLayout>
                         <Select value={sheltersFilter.city}
@@ -432,8 +464,7 @@ const App = () => {
                             <Div style={{display: 'flex'}}>
                                 <Button
                                     stretched
-                                    component={'a'}
-                                    href={shelter.chatLink}
+                                    onClick={() => setActiveModal('modal')}
                                     style={{marginRight: 8}}>Помочь делом</Button>
                                 <Button
                                     stretched
