@@ -94,6 +94,7 @@ const App = () => {
             setPage(0);
             setFilter({...filter, page: 0})
         }
+        window.scrollTo(0, 0)
     }
 
     return (
@@ -146,7 +147,6 @@ const App = () => {
                     <PanelHeader theme={'light'} noShadow>
                         Pet The Pet
                     </PanelHeader>
-                    <a id={'top'}/>
                     <Header
                         level={'secondary'}
                         aside={<Icon24Help/>}
@@ -236,8 +236,6 @@ const App = () => {
                     </List>
                     <Button
                         size="xl"
-                        component='a'
-                        href={'#top'}
                         level={'secondary'}
                         onClick={fetchMore}
                         style={{margin: '8px 0'}}>{pets.length > 0 ? 'Ещё' : 'В начало'}</Button>
