@@ -187,7 +187,7 @@ const App = () => {
             <View activePanel={activePanel} id={'pets'}>
                 <Panel id={'help'} theme={'white'}>
                     <Div>
-                        
+
                     </Div>
                 </Panel>
                 <Panel id={'main'} theme={'white'}>
@@ -404,8 +404,7 @@ const App = () => {
                                     width: 130,
                                     borderRadius: 16,
                                     marginRight: 16,
-                                    // backgroundImage: `url(${current.photo})`,
-                                    backgroundColor: 'tomato',
+                                    backgroundImage: `url(${curShelter.logo})`,
                                     backgroundSize: '130px 130px',
                                     backgroundRepeat: 'no-repeat',
                                     backgroundPosition: 'center'
@@ -442,9 +441,7 @@ const App = () => {
                             <Group>
                                 <Div
                                     style={{
-                                        // backgroundImage: `url(${pet.photo})`,
-                                        backgroundColor: 'cyan',
-                                        // width: '100%',
+                                        backgroundImage: `url(${shelter.logo})`,
                                         height: 300,
                                         backgroundRepeat: 'no-repeat',
                                         backgroundSize: 'auto 100%',
