@@ -283,7 +283,7 @@ const App = () => {
                                 <Button stretched>Забрать домой</Button>
                                 <Button stretched style={{
                                     marginLeft: 8
-                                }}>Познакомится</Button>
+                                }}>Познакомиться</Button>
                             </Div>
                         </>
                     )}
